@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Nmap</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>About Nmap</h1>
+        <p>Nmap (Network Mapper) is a free, open-source tool used to discover hosts and services on a computer network, thus creating a "map" of the network. Features include host discovery, port scanning, version detection, and OS detection.</p>
+        <h2>How Nmap Works in Linux</h2>
+        <p>In Linux, Nmap can be run from the command line. Here are some common commands:</p>
+        <ul>
+
+- `<li><code>nmap [IP address]</code>: Basic scan</li>`
+- `<li><code>nmap -sT [IP address]</code>: TCP Connect Scan - Performs a full TCP connection to determine if ports are open</li>`
+- `<li><code>nmap -sS [IP address]</code>: SYN Scan - Sends SYN packets to determine if ports are open without completing the handshake</li>`
+- `<li><code>nmap -sU [IP address]</code>: UDP Scan - Checks for open UDP ports</li>`
+- `<li><code>nmap -sA [IP address]</code>: ACK Scan - Sends ACK packets to determine if ports are filtered or unfiltered</li>`
+- `<li><code>nmap -sW [IP address]</code>: Window Scan - Uses TCP window size to determine open ports</li>`
+- `<li><code>nmap -sX [IP address]</code>: Xmas Scan - Sends TCP packets with the FIN, PSH, and URG flags set to determine if ports are open</li>`
+- `<li><code>nmap -sN [IP address]</code>: Null Scan - Sends TCP packets with no flags set to determine if ports are open</li>`
+- `<li><code>nmap -sI [IP address]</code>: Idle Scan - Uses a third-party host to send packets, making the scan appear as if it originated from that host</li>`
+- `<li><code>nmap -sO [IP address]</code>: IP Protocol Scan - Identifies the IP protocols supported by the target</li>`
+- `<li><code>nmap -sSA [IP address]</code>: TCP SYN/ACK Scan - Sends SYN/ACK packets to determine if ports are open</li>`
+- `<li><code>nmap -sF [IP address]</code>: TCP FIN Scan - Sends TCP packets with the FIN flag set to determine if ports are open</li>`
+- `<li><code>nmap -sM [IP address]</code>: TCP Maimon Scan - Sends TCP packets with the FIN/ACK flags set to determine if ports are open</li>`
+- `<li><code>nmap -sAW [IP address]</code>: TCP ACK Window Scan - Uses the TCP window field to determine open ports</li>`
+- `<li><code>nmap -sP [IP address]</code>: Custom TCP Scan - Allows customization of TCP packet flags for scanning</li>`
+- `<li><code>nmap -sV [IP address]</code>: Service Version Scan - Attempts to determine the version of the services running on open ports</li>`
+- `<li><code>nmap -sC [IP address]</code>: Default Script Scan - Runs Nmap's default set of scripts against open ports</li>`
+- `<li><code>nmap -O [IP address]</code>: OS Detection Scan - Attempts to determine the operating system of the target host</li>`
+- `<li><code>nmap --traceroute [IP address]</code>: Trace Route Scan - Performs a traceroute to discover the path packets take to the target</li>`
+- `<li><code>nmap -PT [IP address]</code>: TCP Ping Scan - Sends TCP packets to check if hosts are up</li>`
+- `<li><code>nmap -PE [IP address]</code>: ICMP Ping Scan - Sends ICMP Echo Request packets to check if hosts are up</li>`
+- `<li><code>nmap -PP [IP address]</code>: Timestamp Ping Scan - Sends ICMP Timestamp Request packets to check if hosts are up</li>`
+- `<li><code>nmap -PA [IP address]</code>: TCP ACK Ping Scan - Sends TCP ACK packets to check if hosts are up</li>`
+- `<li><code>nmap -PU [IP address]</code>: UDP Ping Scan - Sends UDP packets to check if hosts are up</li>`
+- `<li><code>nmap -PS [IP address]</code>: TCP SYN Ping Scan - Sends TCP SYN packets to check if hosts are up</li>`
+- `<li><code>nmap -PO [IP address]</code>: IP Protocol Ping Scan - Sends IP packets with a specific protocol to check if hosts are up</li>`
+- `<li><code>nmap --broadcast [IP address]</code>: Broadcast Ping Scan - Sends broadcast packets to discover hosts on a local network</li>`
+- `<li><code>nmap -sL [IP address]</code>: List Scan - Lists the targets to scan without actually scanning them</li>`
+- `<li><code>nmap -sS -p 53 [IP address]</code>: DNS Scan - Performs a SYN scan specifically on the DNS port (53)</li>`
+- `<li><code>nmap -f [IP address]</code>: Fragmentation Scan - Sends fragmented IP packets to evade packet filters</li>`
+- `<li><code>nmap -6 [IP address]</code>: IPv6 Scan - Performs a scan on IPv6 addresses</li>`
+- `<li><code>nmap -D <decoy1,decoy2,...> [IP address]</code>: Decoy Scan - Uses decoy addresses to obscure the source of the scan</li>`
+- `<li><code>nmap -S <spoofed_IP> [IP address]</code>: Spoofed Scan - Spoofs the source IP address of the scan packets</li>`
+- `<li><code>nmap -b <ftp_relay> [IP address]</code>: FTP Bounce Scan - Uses an FTP server to bounce scan packets to the target</li>`
+- `<li><code>nmap --scanflags <flags> [IP address]</code>: Custom Packet Scan - Customizes the TCP packet flags for the scan</li>`
+- `<li><code>nmap --data-length <length> [IP address]</code>: Data Length Scan - Sets the length of the data portion of the packets</li>`
+- `<li><code>nmap --ttl <value> [IP address]</code>: Time To Live (TTL) Scan - Sets the IP Time To Live (TTL) field of the packets</li>`
+- `<li><code>nmap --cookie-echo [IP address]</code>: Cookie Echo Scan - Uses TCP Cookie Transactions to detect open ports</li>`
+- `<li><code>nmap --scan-delay <time> [IP address]</code>: Scan Delay - Sets the delay between scan probes</li>`
+- `<li><code>nmap --max-parallelism <num> [IP address]</code>: Max Parallelism - Sets the maximum number of parallel operations</li>`
+- `<li><code>nmap --max-rtt-timeout <time> [IP address]</code>: Max RTT Timeout - Sets the maximum round-trip time (RTT) for scan probes</li>`
+- `<li><code>nmap --min-rtt-timeout <time> [IP address]</code>: Min RTT Timeout - Sets the minimum round-trip time (RTT) for scan probes</li>`
+- `<li><code>nmap --initial-rtt-timeout <time> [IP address]</code>: Initial RTT Timeout - Sets the initial round-trip time (RTT) for scan probes</li>`
+- `<li><code>nmap --host-timeout <time> [IP address]</code>: Host Timeout - Sets the maximum time to scan a single host</li>`
+- `<li><code>nmap --max-retries <num> [IP address]</code>: Max Retries - Sets the maximum number of retransmissions</li>`
+- `<li><code>nmap --min-hostgroup <num> [IP address]</code>: Min Hostgroup - Sets the minimum number of hosts in a group for parallel scanning</li>`
+- `<li><code>nmap --max-hostgroup <num> [IP address]</code>: Max Hostgroup - Sets the maximum number of hosts in a group for parallel scanning</li>`
+- `<li><code>nmap --min-rate <num> [IP address]</code>: Min Rate - Sets the minimum number of packets per second</li>`
+- `<li><code>nmap --max-rate <num> [IP address]</code>: Max Rate - Sets the maximum number of packets per second</li>`
+- `<li><code>nmap --max-targets <num> [IP address]</code>: Max Targets - Sets the maximum number of targets to scan</li>`
+- `<li><code>nmap --max-hosts <num> [IP address]</code>: Max Hosts - Sets the maximum number of hosts to scan</li>`
+        </ul>
+        <a href="{{ url_for('index') }}" class="back-link">Back to Scanner</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFOSIGHT</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px #0ff;
+        }
+        h1 {
+            text-align: center;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        .scan-types {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #0ff;
+            border-radius: 5px;
+        }
+        .scan-type {
+            margin: 5px 0;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #111;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px #0ff;
+        }
+        button {
+            background-color: #0ff;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #00ffff80;
+            box-shadow: 0 0 15px #0ff;
+        }
+        #status, #error, #results {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #111;
+        }
+        #error {
+            color: #ff3333;
+        }
+        #results {
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 15px #0ff, 0 0 20px #0ff;
+            }
+            to {
+                text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>INFOSIGHT</h1>
+        <form id="scan-form">
+            <div class="scan-types">
+                {% for key, value in scan_types.items() %}
+                <div class="scan-type">
+                    <input type="checkbox" id="{{ key }}" name="scan_types" value="{{ key }}">
+                    <label for="{{ key }}">{{ value }} ({{ key.replace('_', ' ').title() }})</label>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="text" id="ip-address" name="ip_address" placeholder="Enter IP address" required>
+            <button type="submit">Scan</button>
+        </form>
+        <div id="status"></div>
+        <div id="error"></div>
+        <div id="results"></div>
+    </div>
+
+    <script>
+    document.getElementById('scan-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const statusDiv = document.getElementById('status');
+        const errorDiv = document.getElementById('error');
+        const resultsDiv = document.getElementById('results');
+        
+        const ipAddress = document.getElementById('ip-address').value.trim();
+        const selectedScanTypes = Array.from(document.querySelectorAll('input[name="scan_types"]:checked')).map(el => el.value);
+
+        if (!ipAddress) {
+            errorDiv.innerText = 'Please enter an IP address';
+            return;
+        }
+
+        if (selectedScanTypes.length === 0) {
+            errorDiv.innerText = 'Please select at least one scan type';
+            return;
+        }
+
+        console.log('IP Address:', ipAddress);
+        console.log('Selected Scan Types:', selectedScanTypes);
+        
+        statusDiv.innerText = 'Scanning...';
+        errorDiv.innerText = '';
+        resultsDiv.innerText = '';
+        
+        fetch('/scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ip_address: ipAddress,
+                scan_types: selectedScanTypes
+            })
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            statusDiv.innerText = 'Scan complete';
+            if (data.error) {
+                errorDiv.innerText = `Error: ${data.error}`;
+            } else if (data.result) {
+                resultsDiv.innerText = data.result;
+            } else {
+                errorDiv.innerText = 'No results or error message returned';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            statusDiv.innerText = 'Scan failed';
+            errorDiv.innerText = `An error occurred: ${error.message}`;
+        });
+    });
+    </script>
+</body>
+</html>
