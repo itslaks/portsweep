@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFOSIGHT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #0ff;
+            text-shadow: 0 0 15px #0ff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        .scan-types {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .scan-type {
+            margin: 10px 0;
+        }
+        .scan-type input[type="radio"] {
+            margin-right: 10px;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 10px;
+            background-color: #111;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px #0ff;
+        }
+        button {
+            background: linear-gradient(135deg, #0ff, #00cccc);
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #00cccc, #0ff);
+            box-shadow: 0 0 20px #0ff;
+        }
+        #status, #error, #results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #111;
+            font-size: 1rem;
+        }
+        #error {
+            color: #ff3333;
+        }
+        #results {
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff, 0 0 40px #0ff;
+            }
+            to {
+                text-shadow: 0 0 20px #0ff, 0 0 40px #0ff, 0 0 60px #0ff, 0 0 80px #0ff;
+            }
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #0ff;
+            font-size: 2rem;
+            display: none;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .loading-screen.show {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .spinner {
+            border: 4px solid rgba(0, 255, 255, 0.3);
+            border-left-color: #0ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>INFOSIGHT- Port Scanner</h1>
+        <form id="scan-form">
+            <div class="scan-types">
+                {% for key, value in scan_types.items() %}
+                <div class="scan-type">
+                    <input type="radio" id="{{ key }}" name="scan_types" value="{{ key }}">
+                    <label for="{{ key }}">{{ value }} ({{ key.replace('_', ' ').title() }})</label>
+                </div>
+                {% endfor %}
+            </div>
+            <input type="text" id="ip-address" name="ip_address" placeholder="Enter IP address" required>
+            <button type="submit">Scan</button>
+        </form>
+        <div id="status"></div>
+        <div id="error"></div>
+        <div id="results"></div>
+    </div>
+
+    <div class="loading-screen" id="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+    document.getElementById('scan-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const statusDiv = document.getElementById('status');
+        const errorDiv = document.getElementById('error');
+        const resultsDiv = document.getElementById('results');
+        const loadingScreen = document.getElementById('loading-screen');
+        
+        const ipAddress = document.getElementById('ip-address').value.trim();
+        const selectedScanType = document.querySelector('input[name="scan_types"]:checked');
+
+        if (!ipAddress) {
+            errorDiv.innerText = 'Please enter an IP address';
+            return;
+        }
+
+        if (!selectedScanType) {
+            errorDiv.innerText = 'Please select a scan type';
+            return;
+        }
+
+        const scanType = selectedScanType.value;
+
+        console.log('IP Address:', ipAddress);
+        console.log('Selected Scan Type:', scanType);
+        
+        statusDiv.innerText = 'Scanning...';
+        errorDiv.innerText = '';
+        resultsDiv.innerText = '';
+        loadingScreen.classList.add('show');
+        
+        fetch('/scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ip_address: ipAddress,
+                scan_types: scanType
+            })
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            statusDiv.innerText = 'Scan complete';
+            loadingScreen.classList.remove('show');
+            if (data.error) {
+                errorDiv.innerText = `Error: ${data.error}`;
+            } else if (data.result) {
+                resultsDiv.innerText = data.result;
+            } else {
+                errorDiv.innerText = 'No results or error message returned';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            statusDiv.innerText = 'Scan failed';
+            loadingScreen.classList.remove('show');
+            errorDiv.innerText = `An error occurred: ${error.message}`;
+        });
+    });
+    </script>
+</body>
+</html>
